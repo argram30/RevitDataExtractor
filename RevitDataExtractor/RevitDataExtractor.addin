@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Wish Box</Name>
+    <Assembly>RevitDataExtractor.dll</Assembly>
+    <FullClassName>RevitDataExtractor.DataExtractorApp</FullClassName>
+    <ClientId>D1E9C23A-B502-4AF2-971E-16E53CB3C4E8</ClientId>
+    <VendorId>Hackathon2019_AECTech</VendorId>
+    <VendorDescription>Hackathon2019_AECTech</VendorDescription>
+  </AddIn>
+</RevitAddIns>
