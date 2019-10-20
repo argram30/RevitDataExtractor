@@ -28,7 +28,7 @@ namespace RevitDataExtractor
             //create push button for curve total length
             PushButtonData btnOneData = new PushButtonData("cmdRevitFileProcessor", "Revit File" + System.Environment.NewLine + "Processor", dllPath, "RevitDataExtractor.ProcessRevitFiles");
             PushButton btnOne = tools.AddItem(btnOneData) as PushButton;
-            btnOne.ToolTip = "Select Multiple lines to obtain Total length";
+            btnOne.ToolTip = "Extract Structural information from the model";
             BitmapImage btnoneImage = new BitmapImage(new Uri("pack://application:,,,/RevitDataExtractor;component/Resources/revitFileProcessor.png"));
             btnOne.LargeImage = btnoneImage;
 

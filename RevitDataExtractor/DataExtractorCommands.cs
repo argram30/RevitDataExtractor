@@ -26,7 +26,7 @@ namespace RevitDataExtractor
             Implementations.cmdData = commandData;
             try
             {
-                Implementations.RevitFileProcessor();
+                Implementations.OpenWPF();
                 result = Result.Succeeded;
             }
             catch (revExc.OperationCanceledException)

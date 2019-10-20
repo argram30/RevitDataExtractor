@@ -11,7 +11,6 @@ using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.ApplicationServices;
 
-
 namespace RevitDataExtractor
 {
     internal static class Implementations
@@ -69,9 +68,9 @@ namespace RevitDataExtractor
                     .OfCategory(BuiltInCategory.OST_StructuralFraming)
                     .WhereElementIsNotElementType();
 
-                var fecFloor = new FilteredElementCollector(openedDoc).
-                    OfCategory(BuiltInCategory.OST_Floors).
-                    WhereElementIsNotElementType();
+                var fecFloor = new FilteredElementCollector(openedDoc)
+                    .OfCategory(BuiltInCategory.OST_Floors)
+                    .WhereElementIsNotElementType();
 
                 volColumn = fecColumn.Select(x => x.LookupParameter("Volume").AsDouble()).ToList().Sum();
                 volBeam = fecBeam.Select(x => x.LookupParameter("Volume").AsDouble()).ToList().Sum();
@@ -89,5 +88,11 @@ namespace RevitDataExtractor
         }
         #endregion
 
+        #region Open WPF Window with button click
+        internal static void OpenWPF()
+        {
+
+        }
+        #endregion
     }
 }
