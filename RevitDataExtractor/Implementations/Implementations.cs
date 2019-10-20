@@ -43,9 +43,47 @@ namespace RevitDataExtractor
         }
         #endregion // Properties
 
+        internal static string pathName { get; set; }
+
         #region Revit Processing
         internal static void RevitFileProcessor()
         {
+            DirectoryInfo dirInfo = new DirectoryInfo(pathName);
+            var files = dirInfo.GetFiles("*.rvt");
+            var openOptions = new OpenOptions();
+            openOptions.Audit = false;
+            openOptions.DetachFromCentralOption = DetachFromCentralOption.DoNotDetach;
+
+            foreach (var file in files)
+            {
+                ModelPath modelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(file.FullName);
+                var openedDoc = CachedApp.OpenDocumentFile(modelPath, openOptions);
+
+                double volColumn, volBeam, volFloor, areaFloor, lenBeam;
+
+                var fecColumn = new FilteredElementCollector(openedDoc)
+                    .OfCategory(BuiltInCategory.OST_Columns)
+                    .WhereElementIsNotElementType();
+
+                var fecBeam = new FilteredElementCollector(openedDoc)
+                    .OfCategory(BuiltInCategory.OST_StructuralFraming)
+                    .WhereElementIsNotElementType();
+
+                var fecFloor = new FilteredElementCollector(openedDoc).
+                    OfCategory(BuiltInCategory.OST_Floors).
+                    WhereElementIsNotElementType();
+
+                volColumn = fecColumn.Select(x => x.LookupParameter("Volume").AsDouble()).ToList().Sum();
+                volBeam = fecBeam.Select(x => x.LookupParameter("Volume").AsDouble()).ToList().Sum();
+                volFloor = fecFloor.Select(x => x.LookupParameter("Volume").AsDouble()).ToList().Sum();
+                areaFloor = fecFloor.Select(x => x.LookupParameter("Area").AsDouble()).ToList().Sum();
+                lenBeam = fecBeam.Select(x => x.LookupParameter("Length").AsDouble()).ToList().Sum();
+
+                openedDoc.Close(false);
+            }
+
+
+
             // Do things here
             TaskDialog.Show("Wishbox", "Processing....");
         }
