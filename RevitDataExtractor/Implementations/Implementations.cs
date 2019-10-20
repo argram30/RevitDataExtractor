@@ -43,7 +43,7 @@ namespace RevitDataExtractor
         }
         #endregion // Properties
 
-        #region Curve Total Length
+        #region Revit Processing
         internal static void RevitFileProcessor()
         {
             // Do things here
