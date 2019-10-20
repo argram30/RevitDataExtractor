@@ -11,6 +11,7 @@ using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.Attributes;
 using RevApp = Autodesk.Revit.ApplicationServices;
+using System.Collections.ObjectModel;
 
 namespace RevitDataExtractor
 {
@@ -43,16 +44,15 @@ namespace RevitDataExtractor
         }
         #endregion // Properties
 
-        public static RevitFileProcessorUI revitFileProcessorUI { get; set; }
 
         #region Revit Processing
-        internal static void RevitFileProcessor()
+        internal static void RevitFileProcessor(ObservableCollection<RevitFile> filenames)
         {
             var openOptions = new OpenOptions();
             openOptions.Audit = false;
             openOptions.DetachFromCentralOption = DetachFromCentralOption.DoNotDetach;
 
-            foreach (var file in revitFileProcessorUI.SourceCollection)
+            foreach (var file in filenames)
             {
                 var fullPath = file.FullPath;
                 ModelPath modelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(fullPath);
@@ -92,7 +92,7 @@ namespace RevitDataExtractor
             var window = new Window();
             window.Content = userControl;
             window.ShowDialog();
-            revitFileProcessorUI = userControl;
+            //revitFileProcessorUI = userControl;
         }
         #endregion
 

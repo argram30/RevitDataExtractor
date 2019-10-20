@@ -399,7 +399,7 @@ namespace RevitDataExtractor
 
         private void RunButton_Click(object sender, RoutedEventArgs e)
         {
-            Implementations.RevitFileProcessor();
+            Implementations.RevitFileProcessor(SourceCollection);
             //List of revit files
             //dostuffmethd(public property
         }
