@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Windows.Controls;
 using System.Text.RegularExpressions;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using Autodesk.Revit.Attributes;
-using Autodesk.Revit.ApplicationServices;
+using RevApp = Autodesk.Revit.ApplicationServices;
 
 namespace RevitDataExtractor
 {
@@ -25,7 +26,7 @@ namespace RevitDataExtractor
             }
         }
 
-        public static Application CachedApp
+        internal static RevApp.Application CachedApp
         {
             get
             {
@@ -42,23 +43,22 @@ namespace RevitDataExtractor
         }
         #endregion // Properties
 
-        internal static string pathName { get; set; }
+        public static RevitFileProcessorUI revitFileProcessorUI { get; set; }
 
         #region Revit Processing
         internal static void RevitFileProcessor()
         {
-            DirectoryInfo dirInfo = new DirectoryInfo(pathName);
-            var files = dirInfo.GetFiles("*.rvt");
             var openOptions = new OpenOptions();
             openOptions.Audit = false;
             openOptions.DetachFromCentralOption = DetachFromCentralOption.DoNotDetach;
 
-            foreach (var file in files)
+            foreach (var file in revitFileProcessorUI.SourceCollection)
             {
-                ModelPath modelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(file.FullName);
+                var fullPath = file.FullPath;
+                ModelPath modelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(fullPath);
                 var openedDoc = CachedApp.OpenDocumentFile(modelPath, openOptions);
 
-                double volColumn, volBeam, volFloor, areaFloor, lenBeam;
+                double volColumn = 0.0, volBeam = 0.0, volFloor = 0.0, areaFloor = 0.0, lenBeam = 0.0;
 
                 var fecColumn = new FilteredElementCollector(openedDoc)
                     .OfCategory(BuiltInCategory.OST_Columns)
@@ -79,20 +79,22 @@ namespace RevitDataExtractor
                 lenBeam = fecBeam.Select(x => x.LookupParameter("Length").AsDouble()).ToList().Sum();
 
                 openedDoc.Close(false);
+                TaskDialog.Show("Wishbox", $"The Total volume of column is: {volColumn.ToString()} \n The Total volume of beam is: {lenBeam.ToString()}");
             }
 
-
-
-            // Do things here
-            TaskDialog.Show("Wishbox", "Processing....");
         }
         #endregion
 
         #region Open WPF Window with button click
         internal static void OpenWPF()
         {
-
+            var userControl = new RevitFileProcessorUI();
+            var window = new Window();
+            window.Content = userControl;
+            window.ShowDialog();
+            revitFileProcessorUI = userControl;
         }
         #endregion
+
     }
 }
