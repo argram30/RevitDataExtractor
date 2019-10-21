@@ -13,6 +13,7 @@ using Autodesk.Revit.Attributes;
 using RevApp = Autodesk.Revit.ApplicationServices;
 using System.Collections.ObjectModel;
 
+
 namespace RevitDataExtractor
 {
     internal static class Implementations
@@ -51,17 +52,25 @@ namespace RevitDataExtractor
             var openOptions = new OpenOptions();
             openOptions.Audit = false;
             openOptions.DetachFromCentralOption = DetachFromCentralOption.DoNotDetach;
+            var num = 2;
+            var strList = new List<string> { "File Name", "Volume of Column", "Volume of Beam", "Volume of Floor", "Area of Floor", "Length of Beam" };
+
+            Excel excel = new Excel();
+            excel.initNew();
+            excel.open(@"C:\Users\Raja\Desktop\hackathon test files\datawriter.xlsx");
+            excel.writeRow("Tabelle1", 1, strList);
 
             foreach (var file in filenames)
             {
                 var fullPath = file.FullPath;
+                var excelFile = file.Directory;
                 ModelPath modelPath = ModelPathUtils.ConvertUserVisiblePathToModelPath(fullPath);
                 var openedDoc = CachedApp.OpenDocumentFile(modelPath, openOptions);
 
                 double volColumn = 0.0, volBeam = 0.0, volFloor = 0.0, areaFloor = 0.0, lenBeam = 0.0;
 
                 var fecColumn = new FilteredElementCollector(openedDoc)
-                    .OfCategory(BuiltInCategory.OST_Columns)
+                    .OfCategory(BuiltInCategory.OST_StructuralColumns)
                     .WhereElementIsNotElementType();
 
                 var fecBeam = new FilteredElementCollector(openedDoc)
@@ -78,8 +87,14 @@ namespace RevitDataExtractor
                 areaFloor = fecFloor.Select(x => x.LookupParameter("Area").AsDouble()).ToList().Sum();
                 lenBeam = fecBeam.Select(x => x.LookupParameter("Length").AsDouble()).ToList().Sum();
 
+                var valList = new List<string> { file.Filename, volColumn.ToString(), volBeam.ToString(), volFloor.ToString(), areaFloor.ToString(), lenBeam.ToString() };
+                
+                excel.writeRow("Tabelle1", num, valList);
+
+                num += 1;
+
                 openedDoc.Close(false);
-                TaskDialog.Show("Wishbox", $"The Total volume of column is: {volColumn.ToString()} \n The Total volume of beam is: {lenBeam.ToString()}");
+                //TaskDialog.Show("Wishbox", $"The Total volume of column is: {volColumn.ToString()} \n The Total volume of beam is: {lenBeam.ToString()}");
             }
 
         }
